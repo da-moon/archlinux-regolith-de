@@ -1,0 +1,16 @@
+---
+import:
+  # - ~/.config/alacritty/ayu-light.yml
+  # - ~/.config/alacritty/ayu-dark.yml
+  # - ~/.config/alacritty/ayu-mirage.yml
+  # - ~/.config/alacritty/solarized-light.yml
+  # - ~/.config/alacritty/solarized-dark.yml
+  # - ~/.config/alacritty/gruvbox-dark.yml
+  # - ~/.config/alacritty/gruvbox-light.yml
+  - ~/.config/alacritty/dracula.yml
+env:
+  TERM: xterm-256color
+cursor:
+  style: Block
+  unfocused_hollow: false
+working_directory: "shared-drives/C:/Users"

@@ -1,0 +1,24 @@
+# applications separator=false
+markup=pango
+
+[apps]
+full_text=Applications:
+separator=true
+
+[terminal]
+full_text=Terminal 
+color=#807dfe
+command=/usr/bin/st
+separator=true
+
+[browser]
+full_text=Browser 
+color=#ff7f81
+command=/usr/bin/brave-browser
+separator=true
+
+[code]
+full_text=VSCode 
+color=#ff7f81
+command=/usr/bin/code
+separator=true

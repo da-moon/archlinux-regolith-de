@@ -1,0 +1,27 @@
+[disk]
+interval=240
+#separator_block_width=15
+separator=false
+#MNT=/home
+
+[memory]
+interval=10
+#separator_block_width=35
+separator=true
+
+[temp]
+interval=30
+#separator_block_width=15
+markup=pango
+color=xresource:i3xrocks.value.color
+separator=false
+label_color=xresource:i3xrocks.label.color
+command=~/.config/regolith/i3xrocks/scripts/temp
+
+
+[cpu_usage]
+interval=5
+min_width=100%
+# separator_block_width=15
+separator=false
+command/.dotfiles/config/regolith/i3xrocks/scripts/cpu_usage

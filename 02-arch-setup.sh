@@ -357,6 +357,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     ""
   )
   rustutils=(
+  "alacritty"
   "starship"
   "exa"
   "ripgrep"

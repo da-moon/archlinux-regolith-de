@@ -1,0 +1,1 @@
+[ -d ~/.cargo/env ] && . ~/.cargo/env

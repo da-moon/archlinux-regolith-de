@@ -1,0 +1,5 @@
+  alias grep="rg"
+  alias ls="exa"
+  alias la="exa -A"
+  alias ll="exa -alhF"
+  alias cat="bat -pp"
