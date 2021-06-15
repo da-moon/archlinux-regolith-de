@@ -423,11 +423,11 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 cp /etc/X11/xinit/xinitrc ~/.xinitrc
 sed -i -e '/exec/d' -e '/^[[:space:]]*$/d' ~/.xinitrc
 (
+  echo 'pulseaudio -k || true' ;
+  echo 'pulseaudio --daemonize  || true' ;
   echo 'export SSH_AUTH_SOCK' ;
   echo 'export $(dbus-launch)' ;
   echo 'exec regolith-session' ;
-  echo 'pulseaudio -k || true' ;
-  echo 'pulseaudio --daemonize  || true' ;
 ) | tee -a ~/.xinitrc > /dev/null ;
 EOF
 # lightdm install and setup
