@@ -63,10 +63,15 @@ echo 'root:root' | chpasswd
 systemctl start sshd
 ```
 
-- find out IP address of the interface, as we will ssh into it from powershell in arch install stages
+- inside your elevated powershell window, run the following snippet to extract list of IP V4 addresses of the interface, as we will ssh into it from powershell in arch install stages.
 
-```bash
-ip a show dev eth0 | grep -w inet
+```powershell
+$IPV4Pattern = '^(?:(?:0?0?\d|0?[1-9]\d|1\d\d|2[0-5][0-5]|2[0-4]\d)\.){3}(?:0?0?\d|0?[1-9]\d|1\d\d|2[0-5][0-5]|2[0-4]\d)$'
+Get-Vm -Name $VMName  | `
+Select-Object -ExpandProperty Networkadapters | `
+Select-Object -ExpandProperty IPAddresses | `
+Where-Object -FilterScript { $_ -match $IPV4Pattern } | `
+Select-Object -First 1
 ```
 
 - open a new, non elevated powershell window. ssh into the VM in the new window. the ssh password will be `root`. You can use the following snippet ; change `192.168.2.246` to match IP address of your VM
