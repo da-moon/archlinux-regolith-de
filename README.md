@@ -154,3 +154,4 @@ cp -r dotfiles/* ~/.dotfiles/
 
 - https://www.distrotube.com/guest-articles/managing-dotfiles-with-rcm.html
 - https://thoughtbot.com/upcase/videos/manage-and-share-your-dotfiles-with-rcm
+- [ TODO ] https://social.technet.microsoft.com/Forums/en-US/7090c940-ac19-4f11-9316-666301889248/virtual-machine-connection-the-session-was-disconnected-if-you-want-to-continue-try-to-connect?forum=win10itprovirt
