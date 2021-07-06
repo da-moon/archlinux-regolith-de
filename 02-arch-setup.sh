@@ -336,8 +336,8 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     echo 'export CONSUL_HTTP_SSL="true"' ;
     echo 'export CONSUL_HTTP_SSL_VERIFY="false"' ;
   ) | tee -a ~/.environment > /dev/null ;
-  sudo tfenv install 0.14.5 > /dev/null 2>&1 || true
-  sudo tfenv use 0.14.5 > /dev/null 2>&1 || true
+  sudo tfenv install 1.0.0 > /dev/null 2>&1 || true
+  sudo tfenv use 1.0.0 > /dev/null 2>&1 || true
   sed -i -e '/terraform/d' ~/.bash_aliases
   (
   echo 'alias tf="terraform"' ;
