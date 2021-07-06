@@ -146,6 +146,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     "pulseaudio"
     "pavucontrol"
     "alsa-utils"
+    ""
   )
   devel=(
     "perl"
