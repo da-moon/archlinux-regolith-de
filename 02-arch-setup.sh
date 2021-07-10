@@ -454,7 +454,7 @@ sudo sed -i -e '/nopasswdlogin/d' -e '/^#%PAM-1.0.*/a auth        sufficient  pa
 getent group nopasswdlogin > /dev/null || sudo groupadd -r nopasswdlogin > /dev/null 2>&1
 sudo gpasswd -a "$(whoami)" nopasswdlogin
 sudo systemctl enable lightdm
-sudo usermod -aG lightdm "$(whoami)"
+sudo usermod -aG lightdm,users "$(whoami)"
 EOF
 umount -R /mnt
 shutdown now
