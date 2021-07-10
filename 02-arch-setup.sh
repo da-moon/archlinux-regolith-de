@@ -439,8 +439,11 @@ sudo sed -i "s/#autologin-user=/autologin-user=$(whoami)/g" /etc/lightdm/lightdm
 sudo sed -i 's/#autologin-session=/autologin-session=regolith/g' /etc/lightdm/lightdm.conf && \
 sudo sed -i 's/#greeter-session=example-gtk-gnome/greeter-session=lightdm-gtk-greeter/g' /etc/lightdm/lightdm.conf && \
 sudo grep 'autologin-user=\|autologin-session=\|greeter-session=' /etc/lightdm/lightdm.conf
+sudo sed -i -e '/nopasswdlogin/d' -e '/^#%PAM-1.0.*/a auth        sufficient  pam_succeed_if.so user ingroup nopasswdlogin' /etc/pam.d/lightdm
+getent group nopasswdlogin > /dev/null || sudo groupadd -r nopasswdlogin > /dev/null 2>&1
+sudo gpasswd -a "$(whoami)" nopasswdlogin
 sudo systemctl enable lightdm
-sudo usermod -aG lightdm `whoami`
+sudo usermod -aG lightdm "$(whoami)"
 EOF
 umount -R /mnt
 shutdown now
