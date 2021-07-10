@@ -213,12 +213,14 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   default_packages+=${cli[@]}
   default_packages+=${fonts[@]}
   sudo pacman -Sy --noconfirm --needed ${default_packages[@]}
+  sudo sed -i -e 's/^\(.*pam_systemd_home.so\)$/#\1/g' /etc/pam.d/system-auth
 EOF
 # aur packages:
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   aur_packages=(
     "visual-studio-code-bin"
     "brave-bin"
+    "superproductivity"
     "glow"
     "xorg-font-utils"
     "git-completion"
@@ -227,7 +229,6 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     ""
   )
   paru --needed --removemake --cleanafter --noconfirm -Sy ${aur_packages[@]}
-  sudo sed -i -e 's/^\(.*pam_systemd_home.so\)$/#\1/g' /etc/pam.d/system-auth
 EOF
 # common config
 arch-chroot /mnt sudo -u damoon sudo usermod -aG avahi,audio `whoami`
