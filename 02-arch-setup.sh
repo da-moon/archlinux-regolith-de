@@ -136,7 +136,14 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 EOF
 # main repos packages
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
+  sudo pacman -Sy --noconfirm glibc
+  sudo pacman -Sy --noconfirm pacman
+  sudo sed -i -e '/ParallelDownloads/d' -e  "/\[options\]/a ParallelDownloads = 16" /etc/pacman.conf
+  sudo sed -i -e '/Color/d' -e '/ILoveCandy/d' -e  "/\[options\]/a Color" -e  "/\[options\]/a ILoveCandy" /etc/pacman.conf
+  sudo pacman -Sy --noconfirm reflector
+  sudo reflector -p https --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
   default_packages=(
+    ""
     "bash-completion"
     "sshpass"
     "wget"
@@ -149,6 +156,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     ""
   )
   devel=(
+    ""
     "perl"
     "java-runtime"
     "python"
@@ -163,6 +171,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     ""
   )
   cli=(
+    ""
     "aria2"
     "jq"
     "gvim"
@@ -187,6 +196,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   )
 
   fonts=(
+    ""
     "noto-fonts"
     "ttf-ubuntu-font-family"
     "ttf-dejavu"
@@ -202,7 +212,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   default_packages+=${devel[@]}
   default_packages+=${cli[@]}
   default_packages+=${fonts[@]}
-  sudo paru -Sy --noconfirm --needed ${default_packages[@]}
+  sudo pacman -Sy --noconfirm --needed ${default_packages[@]}
 EOF
 # aur packages:
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
@@ -250,7 +260,7 @@ docker_packages=(
   "docker-compose"
   ""
 )
-sudo paru -Sy --noconfirm --needed ${docker_packages[@]}
+sudo pacman -Sy --noconfirm --needed ${docker_packages[@]}
 sudo systemctl enable docker
 sudo usermod -aG docker `whoami`
 sed -i -e '/DOCKER/d' -e '/BUILDKIT/d' ~/.environment
@@ -325,7 +335,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     "vault"
     ""
   )
-  sudo paru -Sy --noconfirm --needed ${packages[@]}
+  sudo pacman -Sy --noconfirm --needed ${packages[@]}
   paru --needed --removemake --cleanafter --noconfirm -Sy ${aur_packages[@]}
   sudo usermod -aG consul,vault,tfenv `whoami`
 
@@ -370,7 +380,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   "procs"
   ""
 )
-  sudo paru -Sy --noconfirm --needed ${rustutils[@]}
+  sudo pacman -Sy --noconfirm --needed ${rustutils[@]}
   paru --needed --removemake --cleanafter --noconfirm -Sy ${aur_packages[@]}
   sed -i -e '/starship/d' ~/.environment
   echo 'eval "$(starship init bash)"' >> ~/.environment
@@ -389,7 +399,7 @@ rm -rf /tmp/regolith-de
 paru --needed --removemake --cleanafter --noconfirm -Sy \
   remontoire-git \
   nerd-fonts-source-code-pro
-sudo paru -Sy --noconfirm \ 
+sudo pacman -Sy --noconfirm \ 
   dmenu \
   gnome-terminal \
   gnome-disk-utility \
@@ -407,7 +417,7 @@ paru --needed --removemake --cleanafter --noconfirm -Sy  \
   pulseaudio-module-xrdp-git
 EOF
 cat << 'EOF' | arch-chroot /mnt bash --
-paru -Sy --noconfirm \
+sudo pacman -Sy --noconfirm \
   hyperv \
   xf86-video-fbdev \ 
 rm -rf /tmp/linux-vm-tools/arch
@@ -433,7 +443,7 @@ sed -i -e '/exec/d' -e '/^[[:space:]]*$/d' ~/.xinitrc
 EOF
 # lightdm install and setup
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
-sudo paru -Sy --noconfirm lightdm lightdm-gtk-greeter
+sudo pacman -Sy --noconfirm lightdm lightdm-gtk-greeter
 sudo grep 'autologin-user=\|autologin-session=\|greeter-session=' /etc/lightdm/lightdm.conf && \
 sudo sed -i "s/#autologin-user=/autologin-user=$(whoami)/g" /etc/lightdm/lightdm.conf && \
 sudo sed -i 's/#autologin-session=/autologin-session=regolith/g' /etc/lightdm/lightdm.conf && \
