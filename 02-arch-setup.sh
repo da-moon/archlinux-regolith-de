@@ -227,6 +227,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     ""
   )
   paru --needed --removemake --cleanafter --noconfirm -Sy ${aur_packages[@]}
+  sudo sed -i -e 's/^\(.*pam_systemd_home.so\)$/#\1/g' /etc/pam.d/system-auth
 EOF
 # common config
 arch-chroot /mnt sudo -u damoon sudo usermod -aG avahi,audio `whoami`
@@ -434,11 +435,10 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 cp /etc/X11/xinit/xinitrc ~/.xinitrc
 sed -i -e '/exec/d' -e '/^[[:space:]]*$/d' ~/.xinitrc
 (
-  echo 'pulseaudio -k || true' ;
-  echo 'pulseaudio --daemonize  || true' ;
   echo 'export SSH_AUTH_SOCK' ;
   echo 'export $(dbus-launch)' ;
   echo 'exec regolith-session' ;
+  systemctl --user start pulseaudio.service > /dev/null 2>&1 || true;
 ) | tee -a ~/.xinitrc > /dev/null ;
 EOF
 # lightdm install and setup
