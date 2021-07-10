@@ -220,7 +220,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   aur_packages=(
     "visual-studio-code-bin"
     "brave-bin"
-    "superproductivity"
+    "superproductivity-bin"
     "glow"
     "xorg-font-utils"
     "git-completion"
