@@ -54,7 +54,7 @@ Set-VMFirmware $VMName -EnableSecureBoot Off
 Set-VM -Name $VMName -CheckpointType Disabled
 Set-VMProcessor $VMName -Count $VMProcessorCount
 Set-VMMemory $VMName -DynamicMemoryEnabled $false
-
+Set-VMProcessor -VMName $VMName -ExposeVirtualizationExtensions $true
 $InstallMedia = Join-Path -Path $dir  -ChildPath $output
 Add-VMDvdDrive `
   -VMName $VMName `
