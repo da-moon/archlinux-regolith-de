@@ -441,6 +441,7 @@ sed -i -e '/exec/d' -e '/^[[:space:]]*$/d' ~/.xinitrc
   echo 'exec regolith-session' ;
   systemctl --user start pulseaudio.service > /dev/null 2>&1 || true;
 ) | tee -a ~/.xinitrc > /dev/null ;
+gsettings set org.gnome.desktop.session idle-delay 0
 EOF
 # lightdm install and setup
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
