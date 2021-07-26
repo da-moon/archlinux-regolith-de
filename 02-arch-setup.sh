@@ -79,14 +79,15 @@ zram_enabled=1
 EOF
 
 # locale setup
-ln -sf /mnt/usr/share/zoneinfo/America/Toronto /mnt/etc/localtime
 cat << EOF | arch-chroot /mnt bash --
+ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
 echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
 echo 'LANG=en_US.UTF-8' > /etc/default/locale
 echo 'LC_ALL=en_US.UTF-8' >> /etc/default/locale
 locale-gen
 localectl set-locale LANG=en_US.UTF-8
 hostnamectl set-hostname Arch
+echo 'LANG=en_US.UTF-8' | tee /etc/locale.conf > /dev/null
 EOF
 # network setup
 cat << EOF > /mnt/etc/systemd/network/20-wired.network
