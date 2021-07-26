@@ -236,7 +236,7 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 sed -i -e '/environment/d' -e  '/^PS1.*/a [ -f ~/.environment ] && . ~/.environment' ~/.bashrc
 sed -i -e '/local\/bin/d' ~/.environment
 (
-  export PATH="$PATH:$HOME/.local/bin"
+  echo 'export PATH="$PATH:$HOME/.local/bin"'
 ) | tee ~/.environment > /dev/null ;
 EOF
 # init aliases
