@@ -433,6 +433,7 @@ sudo systemctl enable hv_vss_daemon.service
 EOF
 arch-chroot /mnt sudo -u damoon sudo usermod -aG kvm `whoami`
 # xint setup session for regolith
+# sudo pacman -Sy --noconfirm --needed xorg-xinit
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 cp /etc/X11/xinit/xinitrc ~/.xinitrc
 sed -i -e '/exec/d' -e '/^[[:space:]]*$/d' ~/.xinitrc
