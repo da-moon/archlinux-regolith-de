@@ -402,7 +402,7 @@ rm -rf /tmp/regolith-de
 paru --needed --removemake --cleanafter --noconfirm -Sy \
   remontoire-git \
   nerd-fonts-source-code-pro
-sudo pacman -Sy --noconfirm \ 
+sudo pacman -Sy --noconfirm --needed  \ 
   dmenu \
   gnome-terminal \
   gnome-disk-utility \
@@ -420,7 +420,7 @@ paru --needed --removemake --cleanafter --noconfirm -Sy  \
   pulseaudio-module-xrdp-git
 EOF
 cat << 'EOF' | arch-chroot /mnt bash --
-sudo pacman -Sy --noconfirm \
+sudo pacman -Sy --noconfirm --needed \
   hyperv \
   xf86-video-fbdev \ 
 rm -rf /tmp/linux-vm-tools/arch
