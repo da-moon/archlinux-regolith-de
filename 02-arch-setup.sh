@@ -402,12 +402,7 @@ rm -rf /tmp/regolith-de
 paru --needed --removemake --cleanafter --noconfirm -Sy \
   remontoire-git \
   nerd-fonts-source-code-pro
-sudo pacman -Sy --noconfirm --needed  \ 
-  dmenu \
-  gnome-terminal \
-  gnome-disk-utility \
-  acpi \
-  sysstat
+sudo pacman -Sy --noconfirm --needed dmenu gnome-terminal gnome-disk-utility acpi sysstat
 sudo python3 -m pip install td-cli
 regolith-look stage
 regolith-look set solarized-dark
