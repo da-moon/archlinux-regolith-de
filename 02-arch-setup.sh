@@ -131,7 +131,7 @@ EOF
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   git clone https://aur.archlinux.org/paru.git /tmp/paru
   pushd /tmp/paru
-  makepkg -sic --noconfirm
+  makepkg -sicr --noconfirm
   popd
   sudo rm -rf /tmp/paru
 EOF
@@ -396,7 +396,7 @@ EOF
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 git clone https://github.com/gardotd426/regolith-de.git /tmp/regolith-de
 pushd /tmp/regolith-de
-makepkg -sic --noconfirm
+makepkg -sicr --noconfirm
 popd
 rm -rf /tmp/regolith-de
 paru --needed --removemake --cleanafter --noconfirm -Sy \
