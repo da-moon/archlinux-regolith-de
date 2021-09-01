@@ -1,7 +1,7 @@
 # ─── VM CONFIG ──────────────────────────────────────────────────────────────────
-$MemoryStartupBytes="4GB"
+$MemoryStartupBytes=4GB
 $VMProcessorCount=4
-$VHDSizeBytes="128GB"
+$VHDSizeBytes=128GB
 $VMName = 'ArchLinux'
 # ────────────────────────────────────────────────────────────────────────────────
 $dir = $Env:UserProfile + '\Downloads\iso'
