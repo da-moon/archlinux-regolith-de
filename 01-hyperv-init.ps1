@@ -7,7 +7,8 @@ $VMName = 'ArchLinux'
 $dir = $Env:UserProfile + '\Downloads\iso'
 New-Item -Path $dir -Type Directory -Force
 
-$url = "https://archive.archlinux.org/iso/$(Get-Date -Format 'yyyy.MM').01/archlinux-$(Get-Date -Format 'yyyy.MM').01-x86_64.iso"
+# $url = "https://archive.archlinux.org/iso/$(Get-Date -Format 'yyyy.MM').01/archlinux-$(Get-Date -Format 'yyyy.MM').01-x86_64.iso"
+$url = "https://archive.archlinux.org/iso/2021.07.01/archlinux-2021.07.01-x86_64.iso"
 $output ='arch.iso'
 aria2c -k 1M -c -j16 -x16 --dir="$dir" --out="$output" "$url"
 
