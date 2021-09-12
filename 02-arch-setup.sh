@@ -65,7 +65,8 @@ uuid=$(arch-chroot /mnt blkid -s PARTUUID -o value $root_partition)
 cat << EOF > /mnt/boot/EFI/Boot/refind.conf
 scanfor manual
 # -1 for immediate
-timeout 1
+timeout 20
+fold_linux_kernels false
 menuentry "Arch" {
   loader vmlinuz-linux
   initrd initramfs-linux.img
