@@ -451,7 +451,9 @@ sudo sed -i 's/#greeter-session=example-gtk-gnome/greeter-session=lightdm-gtk-gr
 sudo grep 'autologin-user=\|autologin-session=\|greeter-session=' /etc/lightdm/lightdm.conf
 sudo sed -i -e '/nopasswdlogin/d' -e '/^#%PAM-1.0.*/a auth        sufficient  pam_succeed_if.so user ingroup nopasswdlogin' /etc/pam.d/lightdm
 getent group nopasswdlogin > /dev/null || sudo groupadd -r nopasswdlogin > /dev/null 2>&1
+getent group autologin > /dev/null || sudo groupadd -r autologin > /dev/null 2>&1
 sudo gpasswd -a "$(whoami)" nopasswdlogin
+sudo gpasswd -a "$(whoami)" autologin
 sudo systemctl enable lightdm
 sudo usermod -aG lightdm,users "$(whoami)"
 EOF
