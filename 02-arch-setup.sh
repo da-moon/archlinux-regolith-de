@@ -24,13 +24,12 @@ mount $root_partition /mnt -t btrfs -o defaults,noatime,nodiratime,discard,autod
 btrfs subvolume create /mnt/@ ;
 btrfs subvolume create /mnt/@home ;
 btrfs subvolume create /mnt/@snapshots ;
-
 umount /mnt ;
-mount -o defaults,noatime,nodiratime,discard,autodefrag,ssd,compress=lzo,space_cache,subvol=@ $root_partition /mnt ;
+mount -o defaults,noatime,nodiratime,compress=zstd:2,ssd,discard=async,space_cache,autodefrag,subvol=@ $root_partition /mnt ;
 mkdir -p /mnt/home ;
-mount -o defaults,noatime,nodiratime,discard,autodefrag,ssd,compress=lzo,space_cache,subvol=@home $root_partition /mnt/home ;
+mount -o defaults,noatime,nodiratime,compress=zstd:2,ssd,discard=async,space_cache,autodefrag,subvol=@home $root_partition /mnt/home ;
 mkdir -p /mnt/.snapshots ;
-mount -o compress=lzo,discard,noatime,nodiratime,subvol=@snapshots $root_partition /mnt/.snapshots ;
+mount -o compress=zstd:2,discard=async,noatime,nodiratime,subvol=@snapshots $root_partition /mnt/.snapshots ;
 mkdir -p /mnt/boot ;
 mount $boot_partition /mnt/boot ;
 
