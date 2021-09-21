@@ -402,10 +402,12 @@ rm -rf /tmp/regolith-de
 paru --needed --removemake --cleanafter --noconfirm -Sy \
   remontoire-git \
   nerd-fonts-source-code-pro
+paru --needed --removemake --cleanafter --noconfirm jsoncpp-git  
 sudo pacman -Sy --noconfirm --needed dmenu gnome-terminal gnome-disk-utility acpi sysstat
 sudo python3 -m pip install td-cli
 regolith-look stage
 regolith-look set solarized-dark
+[ -r /usr/lib/libjsoncpp.so ] && [ ! -r /usr/lib/libjsoncpp.so.1 ] && sudo ln -sf /usr/lib/libjsoncpp.so /usr/lib/libjsoncpp.so.1
 EOF
 
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
