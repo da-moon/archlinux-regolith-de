@@ -407,6 +407,7 @@ sudo pacman -Sy --noconfirm --needed dmenu gnome-terminal gnome-disk-utility acp
 sudo python3 -m pip install td-cli
 regolith-look stage
 regolith-look set solarized-dark
+# [ NOTE ] for i3-snapshot
 [ -r /usr/lib/libjsoncpp.so ] && [ ! -r /usr/lib/libjsoncpp.so.1 ] && sudo ln -sf /usr/lib/libjsoncpp.so /usr/lib/libjsoncpp.so.1
 EOF
 
