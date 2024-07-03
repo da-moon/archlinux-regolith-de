@@ -431,8 +431,8 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 paru --needed --removemake --cleanafter --noconfirm -Sy regolith-full ;
 sudo python3 -m pip install --break-system-packages td-cli
 
-sed -i 's/--builtin //' /usr/bin/regolith-session
-cp -r /usr/lib/systemd/user/{gnome-session\@gnome-flashback-metacity.target.d/,gnome-session\@regolith.target.d}
+sudo sed -i 's/--builtin //' /usr/bin/regolith-session
+sudo cp -r /usr/lib/systemd/user/{gnome-session\@gnome-flashback-metacity.target.d/,gnome-session\@regolith.target.d}
 
 regolith-look stage
 regolith-look set solarized-dark
@@ -442,18 +442,10 @@ regolith-look set solarized-dark
 EOF
 
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
-paru --needed --removemake --cleanafter --noconfirm -Sy  \
-  xrdp \
-  xorgxrdp-devel-git \
-  pulseaudio-module-xrdp-git
-EOF
-cat << 'EOF' | arch-chroot /mnt bash --
-sudo pacman -Sy --noconfirm --needed \
-  hyperv \
-  xf86-video-fbdev \ 
+sudo pacman -S --noconfirm --needed chaotic-aur/xorgxrdp chaotic-aur/pulseaudio-module-xrdp chaotic-aur/xrdp xorg-drivers xorg hyperv xf86-video-fbdev
 rm -rf /tmp/linux-vm-tools/arch
 git clone https://github.com/Microsoft/linux-vm-tools /tmp/linux-vm-tools
-bash /tmp/linux-vm-tools/arch/install-config.sh
+sudo -E bash /tmp/linux-vm-tools/arch/install-config.sh
 rm -rf /tmp/linux-vm-tools/arch
 sudo systemctl enable hv_fcopy_daemon.service
 sudo systemctl enable hv_kvp_daemon.service
