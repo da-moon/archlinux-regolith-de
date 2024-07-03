@@ -19,7 +19,7 @@ echo w; echo Y;
 mkfs.fat -F32 $boot_partition ;
 mkfs.btrfs  -f -L data $root_partition ;
 
-mount $root_partition /mnt -t btrfs -o defaults,noatime,nodiratime,discard,autodefrag,ssd,compress=lzo,space_cache ;
+mount $root_partition /mnt -t btrfs -o defaults,noatime,nodiratime,discard,autodefrag,ssd,compress=lzo,space_cache=v2 ;
 
 btrfs subvolume create /mnt/@ ;
 btrfs subvolume create /mnt/@home ;
