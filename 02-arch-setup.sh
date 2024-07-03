@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 export disk="/dev/sda" ;
 export boot_partition="${disk}1" ;
@@ -39,23 +40,60 @@ btrfs subvolume create /mnt/var/log ;
 btrfs subvolume create /mnt/var/tmp ;
 
 timedatectl set-ntp true ;
-reflector -p https --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist ;
-
-pacstrap /mnt base base-devel networkmanager bash openssh btrfs-progs systemd-swap tlp git sudo linux linux-firmware ;
+reflector --protocol https --threads 16 --country US --sort delay --latest 4 --save "/etc/pacman.d/mirrorlist" ;
+pacman -Syu --noconfirm ; 
+pacstrap /mnt base base-devel bash  ;
 
 genfstab -Up /mnt > /mnt/etc/fstab ;
-
 echo "vm.swappiness=10" > /mnt/etc/sysctl.d/99-sysctl.conf ;
-
 echo "tmpfs     /tmp         tmpfs  defaults,noatime,mode=1777  0 0" >> /mnt/etc/fstab ;
 
-sed -i  -e '/#/d' -e '/^[[:space:]]*$/d' -e '/MODULES/d' -e '/BINARIES/d' /mnt/etc/mkinitcpio.conf
-cat << EOF >> /mnt/etc/mkinitcpio.conf
-MODULES=(btrfs loop)
-BINARIES=(/usr/bin/btrfs)
+# initial pacman setup
+CHAOTIC_AUR_KEY="3056513887B78AEB" ;
+cat << EOF | arch-chroot /mnt bash --
+sed -i \
+  -e "/ParallelDownloads/d" \
+  -e  '/\[options\]/a ParallelDownloads = 16' \
+  -e "/Color/d" \
+  -e "/ILoveCandy/d" \
+  -e '/\[options\]/a Color' \
+  -e '/\[options\]/a ILoveCandy' \
+"/etc/pacman.conf" \
+&& sed -i \
+  -e 's/ check / !check /g' \
+  -e 's/COMPRESSXZ.*/COMPRESSXZ=(xz -T 0 -c -z -)/g' \
+  -e "s/PKGEXT.*/PKGEXT='.pkg.tar'/g" \
+"/etc/makepkg.conf" \
+&& pacman-key --init \
+&& pacman-key --populate "archlinux" \
+&& pacman-key --recv-key "${CHAOTIC_AUR_KEY}" --keyserver "keyserver.ubuntu.com" > /dev/null 2>&1 \
+&& pacman-key --lsign-key "${CHAOTIC_AUR_KEY}" > /dev/null 2>&1 \
+&& pacman -U --noprogressbar --noconfirm \
+'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' \
+&& ( \
+  echo '[chaotic-aur]' ; \
+  echo 'Include = /etc/pacman.d/chaotic-mirrorlist' ; \
+) | tee -a "/etc/pacman.conf" > /dev/null \
+&& pacman -Syyu --noconfirm \
+&& pacman -S --noconfirm git sudo networkmanager openssh btrfs-progs tlp linux linux-firmware \
+&& pacman -S --noconfirm chaotic-aur/paru
 EOF
-arch-chroot /mnt bash -c "mkinitcpio -p linux"
-
+# kernel config
+cat << EOF | arch-chroot /mnt bash --
+sed -i  \
+  -e '/#/d' \
+  -e '/^[[:space:]]*$/d' \
+  -e '/MODULES/d' \
+  -e '/BINARIES/d' \
+  "/etc/mkinitcpio.conf" \
+&& ( \
+  echo 'MODULES=(btrfs loop)' ; \
+  echo 'BINARIES=(/usr/bin/btrfs)' ; \
+) | tee -a "/etc/mkinitcpio.conf" > /dev/null \
+&& mkinitcpio -p linux
+EOF
+# bootloader
 arch-chroot /mnt pacman -S --noconfirm refind
 mkdir -p /mnt/boot/EFI/
 cp -r /mnt/usr/share/refind/drivers_x64/ /mnt/boot/EFI/Boot/
@@ -69,14 +107,27 @@ fold_linux_kernels false
 menuentry "Arch" {
   loader vmlinuz-linux
   initrd initramfs-linux.img
-  options "root=PARTUUID=$uuid  rootflags=subvol=@ add_efi_memmap"
+  options "root=PARTUUID=$uuid  rootflags=subvol=@ add_efi_memmap zswap.enabled=0"
 }
 EOF
-sed -i -e '/#/d' -e '/^[[:space:]]*$/d' -e '/zswap_enabled/d' -e '/zram_enabled/d' /mnt/etc/systemd/swap.conf
-cat << EOF >> /mnt/etc/systemd/swap.conf
-zswap_enabled=0
-zram_enabled=1
+# zram config
+# NOTE: zram service might have to be enables manually
+cat << EOF | arch-chroot /mnt bash --
+pacman -S --noconfirm zram-generator \
+&& (
+  echo '[zram0]' ; \
+  echo 'zram-size = ram / 2' ; \
+  echo 'compression-algorithm = zstd' ; \
+) | tee /etc/systemd/zram-generator.conf > /dev/null \
+systemctl daemon-reload ;
+systemctl enable systemd-zram-setup@zram0.service ;
 EOF
+# sed -i -e '/#/d' -e '/^[[:space:]]*$/d' -e '/zswap_enabled/d' -e '/zram_enabled/d' /mnt/etc/systemd/swap.conf
+# cat << EOF >> /mnt/etc/systemd/swap.conf
+# zswap_enabled=0
+# zram_enabled=1
+# EOF
+
 
 # locale setup
 cat << EOF | arch-chroot /mnt bash --
@@ -127,22 +178,10 @@ cat << EOF | arch-chroot  /mnt bash --
   echo 'damoon:damoon' | chpasswd
 EOF
 
-# paru installation
-cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
-  git clone https://aur.archlinux.org/paru.git /tmp/paru
-  pushd /tmp/paru
-  makepkg -sicr --noconfirm
-  popd
-  sudo rm -rf /tmp/paru
-EOF
 # main repos packages
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   sudo pacman -Sy --noconfirm glibc
   sudo pacman -Sy --noconfirm pacman
-  sudo sed -i -e '/ParallelDownloads/d' -e  "/\[options\]/a ParallelDownloads = 16" /etc/pacman.conf
-  sudo sed -i -e '/Color/d' -e '/ILoveCandy/d' -e  "/\[options\]/a Color" -e  "/\[options\]/a ILoveCandy" /etc/pacman.conf
-  sudo pacman -Sy --noconfirm reflector
-  sudo reflector -p https --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
   default_packages=(
     ""
     "bash-completion"
@@ -161,10 +200,8 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     "perl"
     "java-runtime"
     "python"
-    "python2"
     "nodejs"
     "ruby"
-    "python2-pip"
     "python-pip"
     "python-poetry"
     "yarn"
@@ -221,7 +258,6 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   aur_packages=(
     "visual-studio-code-bin"
     "brave-bin"
-    "superproductivity-bin"
     "glow"
     "xorg-font-utils"
     "git-completion"
@@ -366,14 +402,11 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
 EOF
 # rust tools 
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
-  aur_packages=(
-    "nushell-bin"
-    ""
-  )
   rustutils=(
+  "nushell"
   "alacritty"
   "starship"
-  "exa"
+  "eza"
   "ripgrep"
   "bat"
   "tokei"
@@ -384,7 +417,6 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
   ""
 )
   sudo pacman -Sy --noconfirm --needed ${rustutils[@]}
-  paru --needed --removemake --cleanafter --noconfirm -Sy ${aur_packages[@]}
   sed -i -e '/starship/d' ~/.environment
   echo 'eval "$(starship init bash)"' >> ~/.environment
   sed -i -e '/bat/d' ~/.bash_aliases
@@ -392,21 +424,19 @@ cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
     echo 'alias cat="bat -pp"' ;
   ) | tee -a ~/.bash_aliases > /dev/null ;
 EOF
-# regolith installation
+# NOTE: regolith installation 
+# This may fail and you might have to run it after installing arch in TTY shell
+# nerd-fonts-source-code-pro \
 cat << 'EOF' | arch-chroot /mnt sudo -u damoon bash --
-git clone https://github.com/gardotd426/regolith-de.git /tmp/regolith-de
-pushd /tmp/regolith-de
-makepkg -sicr --noconfirm
-popd
-rm -rf /tmp/regolith-de
-paru --needed --removemake --cleanafter --noconfirm -Sy \
-  remontoire-git \
-  nerd-fonts-source-code-pro
-paru --needed --removemake --cleanafter --noconfirm jsoncpp-git  
-sudo pacman -Sy --noconfirm --needed dmenu gnome-terminal gnome-disk-utility acpi sysstat
-sudo python3 -m pip install td-cli
+paru --needed --removemake --cleanafter --noconfirm -Sy regolith-full ;
+sudo python3 -m pip install --break-system-packages td-cli
+
+sed -i 's/--builtin //' /usr/bin/regolith-session
+cp -r /usr/lib/systemd/user/{gnome-session\@gnome-flashback-metacity.target.d/,gnome-session\@regolith.target.d}
+
 regolith-look stage
 regolith-look set solarized-dark
+
 # [ NOTE ] for i3-snapshot
 [ -r /usr/lib/libjsoncpp.so ] && [ ! -r /usr/lib/libjsoncpp.so.1 ] && sudo ln -sf /usr/lib/libjsoncpp.so /usr/lib/libjsoncpp.so.1
 EOF
